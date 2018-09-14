@@ -1,0 +1,15 @@
+{
+  "name": "vue-data-i18n",
+  "version": "1.0.0",
+  "description": "基于vue-data的vue国际化插件",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "vue",
+    "i18n"
+  ],
+  "author": "avengang",
+  "license": "ISC"
+}
