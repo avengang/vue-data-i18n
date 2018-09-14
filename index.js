@@ -28,6 +28,8 @@ function install(Vue, options) {
         var v = ''
         if(_this.hasOwnProperty(exp[1])) {
           v += _this[exp[1]]
+        } else if(_this.g[exp[1]]) {
+          v += _this.g[exp[1]]
         } else {
           v = exp[1]
         }
