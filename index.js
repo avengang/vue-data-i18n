@@ -24,22 +24,23 @@ function install(Vue, options) {
     if(index !== -1) {
       var matchArr = []
       var exp = null
-      var matchStrTotalLen = 0
       while((exp = regex.exec(str)) !== null) {
-        matchArr.push({
-          value: _this[exp[1]],
-          index: exp.index - matchStrTotalLen
-        })
-        matchStrTotalLen += exp[0].length
+        var v = ''
+        if(_this.hasOwnProperty(exp[1])) {
+          v += _this[exp[1]]
+        } else {
+          v = exp[1]
+        }
+        matchArr.push(v)
       }
     }
-    var key = oldStr.replace(/\([^\)]*\)/gm, '')
+    var key = oldStr.replace(/\([^\)]*\)/gm, '()')
     if(i18nObj[this.g.$language][key]) {
       var result = i18nObj[this.g.$language][key].replace(/\[[^\]]*\]/gm, '')
-      var totalLen = 0
-      for(var i = 0, ii = matchArr.length; i < ii; i++) {
-        result = result.substring(0, matchArr[i].index + totalLen) + matchArr[i].value + result.substr(matchArr[i].index + totalLen)
-        totalLen += matchArr[i].value.length
+      var matchArrIndex = 0
+      while(result.indexOf('(') !== -1) {
+        result = result.replace('()', matchArr[matchArrIndex])
+        matchArrIndex++
       }
       cache[str] = result
       return result

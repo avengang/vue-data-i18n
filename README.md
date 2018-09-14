@@ -1,12 +1,29 @@
 # vue-data-i18n
-基于vue-data的vue国际化插件
+基于vue-data的vue国际化插件  
+
 ## 使用  
 ```
 npm install vue-data-i18n -D
 import vuedatai18n from 'vue-data-i18n'
-Vue.use(vuedatai18n, i18nData)
+```  
+
+### 国际化配置文件  
+例如入口文件同目录下有 i18n.json
 ```
-## vue文件
+{
+  "config": ["cn", "en"], //config数组第一个值将会默认作为翻译时的key来和$t的参数匹配
+  "data": [
+    ["()中()国()", "()china()()"] 
+  ]
+}
+```  
+
+### 入口js文件
+```
+import i18nData from './i18n.json'
+Vue.use(vuedatai18n, i18nData) // i18nData是json字符串
+```  
+
 ### script标签
 ```
 data() {
@@ -16,9 +33,44 @@ data() {
     zz: 'ddd'
   }
 },
-console.log(this.$t("(yy)中(zz)国[abc](xx)")) // 打印 sss中ddd国123
+console.log(this.$t("(xx)中(yy)国(zz)")) // 打印 中文：123中sss国ddd，英文：123chinasssddd
 ```
 ### template标签
 ```
-<div>{{$t("(yy)中(zz)国[abc](xx)")}}</div> // 页面展示：sss中ddd国123
+<div>{{$t("(xx)中(yy)国(zz)")}}</div> // 页面展示：中文：123中sss国ddd，英文：123chinasssddd
+```  
+
+### 非vue实例对象的属性将会当成普通字符串原样输出
+比如：
 ```
+console.log(this.$t("(xx)中(yy)国(zz1)")) // 打印 中文：123中sss国zz1，英文：123chinassszz1
+<div>{{$t("(xx)中(yy)国(zz1)")}}</div> // 页面展示：中文：123中sss国zz1，英文：123chinassszz1
+```  
+
+## 同名冲突处理
+翻译文件中翻译主键值有可能会有不同的多语言翻译的情况，比如：  
+```
+{
+  "config": ["cn", "en"], //config数组第一个值将会默认作为翻译时的key来和$t的参数匹配
+  "data": [
+    ["好的", "yes"], 
+    ["好的", "ok"] // 只会最后一次出现的key生效
+  ]
+}
+```  
+要想都生效的话就需要用到中括号来区分了，如下：  
+```
+{
+  "config": ["cn", "en"], //config数组第一个值将会默认作为翻译时的key来和$t的参数匹配
+  "data": [
+    ["好的[1]", "yes"], 
+    ["好的[2]", "ok"] // 只会最后一次出现的key生效
+  ]
+}
+```  
+使用的时候同样要把中括号带上去选择：  
+```
+console.log(this.$t("好的[1]")) // 打印 中文：好的，英文：yes
+<div>{{$t("好的[2]")}}</div> // 页面展示：中文：好的，英文：ok
+```  
+中括号是不会出现在翻译结果里面的。
