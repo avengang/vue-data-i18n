@@ -8,15 +8,15 @@ function install(Vue, options) {
     	langObj[data[i][0]] = data[i][langIndex]
     }
   }
-  Vue.mixin({
-    created: function () {
-      this.$vd('$language', config[0])
-    }
-  })
   var regex = /\((.*?)\)/gm
   var cache = {}
+  for(var langIndex = 0; langIndex < config.length; langIndex++) {
+    cache[config[langIndex]] = {}
+  }
   Vue.prototype.$t = function(str) {
-    if(cache[str]) return cache[str]
+    var lang = this.g.__language__
+    if(!lang) lang = config[0]
+    if(cache[lang][str]) return cache[lang][str]
     var oldStr = str
     var _this = this
     str = str.replace(/\[[^\]]*\]/gm, '')
@@ -35,14 +35,14 @@ function install(Vue, options) {
       }
     }
     var key = oldStr.replace(/\([^\)]*\)/gm, '()')
-    if(i18nObj[this.g.$language][key]) {
-      var result = i18nObj[this.g.$language][key].replace(/\[[^\]]*\]/gm, '')
+    if(i18nObj[lang][key]) {
+      var result = i18nObj[lang][key].replace(/\[[^\]]*\]/gm, '')
       var matchArrIndex = 0
       while(result.indexOf('(') !== -1) {
         result = result.replace('()', matchArr[matchArrIndex])
         matchArrIndex++
       }
-      cache[str] = result
+      cache[lang][str] = result
       return result
     }
     return ''
