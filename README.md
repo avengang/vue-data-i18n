@@ -75,3 +75,37 @@ console.log(this.$t("好的[1]")) // 打印 中文：好的，英文：yes
 <div>{{$t("好的[2]")}}</div> // 页面展示：中文：好的，英文：ok
 ```  
 中括号是不会出现在翻译结果里面的。
+### 第三方库国际化
+可以通过语言切换回调方法做第三方国际化，比如：
+```
+import Vue from 'vue'
+import { Menu, Submenu, MenuItem } from 'element-ui'
+import vuedata from 'vue-data'
+import vuedatai18n from 'vue-data-i18n'
+import i18nData from './i18n.json'
+import { beforeSend, beforeReceive } from './assets/util/ajaxHandler.js'
+
+import App from './App.vue'
+import router from './park-router'
+
+import enLocale from 'element-ui/lib/locale/lang/en'
+import zhLocale from 'element-ui/lib/locale/lang/zh-CN'
+import locale from 'element-ui/lib/locale'
+
+Vue.use(vuedata)
+Vue.use(vuedatai18n, {
+  data: i18nData.data,
+  config: i18nData.config,
+  callback: function(newV, oldV) {
+    // 设置语言
+    if(newV === 'cn') {
+      locale.use(zhLocale)
+    } else {
+      locale.use(enLocale)
+    }
+  }
+})
+Vue.component(Menu.name, Menu)
+Vue.component(Submenu.name, Submenu)
+Vue.component(MenuItem.name, MenuItem)
+```

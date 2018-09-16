@@ -13,6 +13,15 @@ function install(Vue, options) {
   for(var langIndex = 0; langIndex < config.length; langIndex++) {
     cache[config[langIndex]] = {}
   }
+  Vue.mixin({
+    created: function () {
+      if(this._uid === 1) {
+        this.$watch('g.__language__', function (newVal, oldVal) {
+          options.callback && options.callback(newVal, oldVal)
+        })
+      }
+    }
+  })
   Vue.prototype.$t = function(str) {
     var lang = this.g.__language__
     if(!lang) lang = config[0]

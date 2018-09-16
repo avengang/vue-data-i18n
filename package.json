@@ -1,6 +1,6 @@
 {
   "name": "vue-data-i18n",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "基于vue-data的vue国际化插件",
   "main": "index.js",
   "scripts": {
