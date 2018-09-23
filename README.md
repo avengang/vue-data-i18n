@@ -109,3 +109,18 @@ Vue.component(Menu.name, Menu)
 Vue.component(Submenu.name, Submenu)
 Vue.component(MenuItem.name, MenuItem)
 ```
+### 多个翻译文件
+```
+---src
+----assets
+-----languages
+------cn.json
+------en.json
+```
+en.json  
+```
+{
+  "中国":"china"
+}
+```
+默认的语言可以不用创建json文件，如果不存在默认的语言配置文件的话就会把其他配置文件的key作为值，比如cn.json

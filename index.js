@@ -1,18 +1,33 @@
 function install(Vue, options) {
   var data = options.data
+  var dir = options.dir
   var config = options.config
   var i18nObj = {}
-  for(var langIndex = 0; langIndex < config.length; langIndex++) {
-    var langObj = i18nObj[config[langIndex]] = {}
-    for(var i = 0, ii = data.length; i < ii; i++) {
-    	langObj[data[i][0]] = data[i][langIndex]
+  var defaultLang = options.default
+  if(data) {
+    for(var langIndex = 0; langIndex < config.length; langIndex++) {
+    	var langObj = i18nObj[config[langIndex]] = {}
+    	for(var i = 0, ii = data.length; i < ii; i++) {
+    		langObj[data[i][0]] = data[i][langIndex]
+    	}
+    }
+  } else {
+    var tempLangData = null
+    var keyArr = Object.keys(options)
+    for(var i = 0, ii = keyArr.length; i < ii; i++) {
+      var k = keyArr[i]
+      if(k === 'data' || k === 'config' || k === 'callback') continue
+      tempLangData = i18nObj[k] = options[k]
+    }
+    if(tempLangData && !i18nObj[defaultLang]) {
+      i18nObj[defaultLang] = {}
+      for(var k in tempLangData) {
+        i18nObj[defaultLang][k] = k 
+      }
     }
   }
   var regex = /\((.*?)\)/gm
   var cache = {}
-  for(var langIndex = 0; langIndex < config.length; langIndex++) {
-    cache[config[langIndex]] = {}
-  }
   Vue.mixin({
     created: function () {
       if(this._uid === 1) {
@@ -24,8 +39,8 @@ function install(Vue, options) {
   })
   Vue.prototype.$t = function(str) {
     var lang = this.g.__language__
-    if(!lang) lang = config[0]
-    if(cache[lang][str]) return cache[lang][str]
+    if(!lang) lang = (config&&config.length) ? config[0] : defaultLang
+    if(cache[lang] && cache[lang][str]) return cache[lang][str]
     var oldStr = str
     var _this = this
     str = str.replace(/\[[^\]]*\]/gm, '')
@@ -53,6 +68,7 @@ function install(Vue, options) {
         result = result.replace('()', matchArr[matchArrIndex])
         matchArrIndex++
       }
+      if(!cache[lang]) cache[lang] = {}
       cache[lang][str] = result
       return result
     }
