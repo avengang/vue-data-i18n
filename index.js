@@ -37,7 +37,7 @@ function install(Vue, options) {
       }
     }
   })
-  Vue.prototype.$t = function(str) {
+  Vue.prototype.$t = window.VueData.$t = function(str) {
     var lang = this.g.__language__
     if(!lang) lang = (config&&config.length) ? config[0] : defaultLang
     if(cache[lang] && cache[lang][str]) return cache[lang][str]
