@@ -5,6 +5,8 @@
 ```
 npm install vue-data-i18n -D
 import vuedatai18n from 'vue-data-i18n'
+
+this.$setLanguage('zh');//设置语言为zh
 ```  
 
 ### 国际化配置文件  

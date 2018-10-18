@@ -37,6 +37,9 @@ function install(Vue, options) {
       }
     }
   })
+  Vue.prototype.$setLanguage = function(lang) {
+    this.$vd('__language__', lang)
+  }
   Vue.prototype.$t = window.VueData.$t = function(str) {
     var lang = this.g.__language__
     if(!lang) lang = (config&&config.length) ? config[0] : defaultLang
