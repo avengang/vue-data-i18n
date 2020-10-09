@@ -27,6 +27,7 @@ function install(Vue, options) {
     }
   }
   var regex = /\((.*?)\)/gm
+  var regex_placeholder = /\$\{(.*?)\}/gm
   var cache = {}
   Vue.mixin({
     created: function () {
@@ -43,6 +44,9 @@ function install(Vue, options) {
   Vue.prototype.$t = window.VueData.$t = function(str) {
     var lang = this.g.__language__
     if(!lang) lang = (config&&config.length) ? config[0] : defaultLang
+    if(!cache[lang]) {
+      cache[lang] = {}
+    }
     if(cache[lang] && cache[lang][str]) return cache[lang][str]
     var oldStr = str
     var _this = this
@@ -65,6 +69,19 @@ function install(Vue, options) {
     }
     var key = oldStr.replace(/\([^\)]*\)/gm, '()')
     if(i18nObj[lang][key]) {
+      var exp_p = regex_placeholder.exec(str)
+      if(exp_p && exp_p[1]) {
+        var dl = (config&&config.length) ? config[0] : defaultLang
+        console.log(lang, dl)
+        if(lang === dl) {
+          cache[lang][str] = ''
+          return ''
+        } else {
+          cache[lang][str] = i18nObj[lang][key]
+          return i18nObj[lang][key]
+        }
+      }
+
       var result = i18nObj[lang][key].replace(/\[[^\]]*\]/gm, '')
       var matchArrIndex = 0
       while(result.indexOf('(') !== -1) {
