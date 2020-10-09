@@ -15,7 +15,8 @@ this.$setLanguage('zh');//设置语言为zh
 {
   "config": ["cn", "en"], //config数组第一个值将会默认作为翻译时的key来和$t的参数匹配
   "data": [
-    ["()中()国()", "()china()()"] 
+    ["()中()国()", "()china()()"],
+    ["${不显示key}", "buxianshikey"] 
   ]
 }
 ```  
@@ -39,7 +40,7 @@ console.log(this.$t("(xx)中(yy)国(zz)")) // 打印 中文：123中sss国ddd，
 ```
 ### template标签
 ```
-<div>{{$t("(xx)中(yy)国(zz)")}}</div> // 页面展示：中文：123中sss国ddd，英文：123chinasssddd
+<div>{{$t("(xx)中(yy)国(zz)")}}</div> // 页面展示：中文：不显示，英文：buxianshikey
 ```  
 
 ### 非vue实例对象的属性将会当成普通字符串原样输出
@@ -49,7 +50,10 @@ console.log(this.$t("(xx)中(yy)国(zz1)")) // 打印 中文：123中sss国zz1�
 <div>{{$t("(xx)中(yy)国(zz1)")}}</div> // 页面展示：中文：123中sss国zz1，英文：123chinassszz1
 ```  
 如果当前vue实例没有的属性会再往全局对象中取找，如果找到了就取全局属性值，再没找到就当成字符串输出。  
-
+### ${xxx}
+```
+<div>{{$t("${不显示key}")}}</div> // 页面展示：中文：123中sss国zz1，英文：123chinassszz1
+``` 
 ## 同名冲突处理
 翻译文件中翻译主键值有可能会有不同的多语言翻译的情况，比如：  
 ```
