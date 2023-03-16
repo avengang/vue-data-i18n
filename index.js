@@ -30,8 +30,8 @@ function install(Vue, options) {
   var regex_placeholder = /\$\{(.*?)\}/m
   var cache = {}
   Vue.mixin({
-    created: function () {
-      if(this._uid === 1) {
+    mounted() {
+      if(this.$el.id === 'app' && this.g) {
         this.$watch('g.__language__', function (newVal, oldVal) {
           options.callback && options.callback(newVal, oldVal)
         })
