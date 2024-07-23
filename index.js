@@ -26,13 +26,14 @@ function install(Vue, options) {
       }
     }
   }
-  var regex = /\((.*?)\)/gm
+  var regex = /\(([^(|^)]*?)\)/gm
   var regex_placeholder = /\$\{(.*?)\}/m
   var cache = {}
   Vue.mixin({
     mounted() {
       if(this.$el.id === 'app' && this.g) {
         this.$watch('g.__language__', function (newVal, oldVal) {
+          this.$forceUpdate()
           options.callback && options.callback(newVal, oldVal)
         })
       }
@@ -41,13 +42,15 @@ function install(Vue, options) {
   Vue.prototype.$setLanguage = function(lang) {
     this.$vd('__language__', lang)
   }
-  Vue.prototype.$t = window.VueData.$t = function(str) {
+  Vue.prototype.$t = window.VueData.$t = function(str, noCache) {
+    if(!str) return ''
+    str = str.replace(/\(\)/g, '_@_@_')
     var lang = this.g.__language__
     if(!lang) lang = (config&&config.length) ? config[0] : defaultLang
     if(!cache[lang]) {
       cache[lang] = {}
     }
-    if(cache[lang] && cache[lang][str]) return cache[lang][str]
+    if(!noCache && cache[lang] && cache[lang][str]) return cache[lang][str]
     var oldStr = str
     var _this = this
     str = str.replace(/\[[^\]]*\]/gm, '')
@@ -57,7 +60,7 @@ function install(Vue, options) {
       var exp = null
       while((exp = regex.exec(str)) !== null) {
         var v = ''
-        if(_this.hasOwnProperty(exp[1])) {
+        if(_this[exp[1]] !== undefined) {
           v += _this[exp[1]]
         } else if(_this.g[exp[1]]) {
           v += _this.g[exp[1]]
@@ -67,32 +70,47 @@ function install(Vue, options) {
         matchArr.push(v)
       }
     }
-    var key = oldStr.replace(/\([^\)]*\)/gm, '()')
+    var key = oldStr.replace(/\([^(^\)]*\)/gm, '()')
     if(i18nObj[lang][key]) {
       // var exp_p = regex_placeholder.exec(str)
       var hasPlaceholder = regex_placeholder.test(str)
       if(hasPlaceholder) {
         var dl = (config&&config.length) ? config[0] : defaultLang
         if(lang === dl) {
-          cache[lang][str] = ''
-          return ''
+          cache[lang][str] = str
+          if(str.indexOf('_@_@_') !== -1) {
+            str = str.replace(/_@_@_/g, '()')
+          }
+          return str
         } else {
           cache[lang][str] = i18nObj[lang][str]
+          if(str.indexOf('_@_@_') !== -1) {
+            str = str.replace(/_@_@_/g, '()')
+          }
           return i18nObj[lang][str]
         }
       }
-
       var result = i18nObj[lang][key].replace(/\[[^\]]*\]/gm, '')
       var matchArrIndex = 0
-      while(result.indexOf('(') !== -1) {
+      const hasParentheses = result.indexOf('()') !== -1
+      while(result.indexOf('()') !== -1) {
         result = result.replace('()', matchArr[matchArrIndex])
         matchArrIndex++
       }
+      
       if(!cache[lang]) cache[lang] = {}
-      cache[lang][str] = result
+      if(!hasParentheses) {
+        cache[lang][str] = result
+      }
+      if(str.indexOf('_@_@_') !== -1) {
+        str = str.replace(/_@_@_/g, '()')
+      }
       return result
     }
-    return ''
+    if(str.indexOf('_@_@_') !== -1) {
+      str = str.replace(/_@_@_/g, '()')
+    }
+    return str
   }
 }
 export default install
