@@ -44,7 +44,6 @@ function install(Vue, options) {
   }
   Vue.prototype.$t = window.VueData.$t = function(str, noCache) {
     if(!str) return ''
-    str = str.replace(/\(\)/g, '_@_@_')
     var lang = this.g.__language__
     if(!lang) lang = (config&&config.length) ? config[0] : defaultLang
     if(!cache[lang]) {
@@ -67,22 +66,18 @@ function install(Vue, options) {
         } else {
           v = exp[1]
         }
+        if(!exp[1]) {
+          v = 'q@-@p'
+        }
         matchArr.push(v)
       }
     }
     var key = oldStr.replace(/\([^(^\)]*\)/gm, '()')
-    if(key.indexOf('_@_@_') !== -1) {
-      key = key.replace(/_@_@_/g, '()')
-    }
     if(i18nObj[lang][key]) {
-      // var exp_p = regex_placeholder.exec(str)
       var hasPlaceholder = regex_placeholder.test(str)
       if(hasPlaceholder) {
         var dl = (config&&config.length) ? config[0] : defaultLang
         if(lang === dl) {
-          if(str.indexOf('_@_@_') !== -1) {
-            str = str.replace(/_@_@_/g, '()')
-          }
           cache[lang][oldStr] = str
           return str
         } else {
@@ -91,28 +86,22 @@ function install(Vue, options) {
         }
       }
       var result = i18nObj[lang][key].replace(/\[[^\]]*\]/gm, '')
-      result = result.replace(/\(\)/g, '_@_@_')
       var matchArrIndex = 0
       const hasParentheses = result.indexOf('()') !== -1
       while(result.indexOf('()') !== -1) {
-        if(matchArr[matchArrIndex] === undefined) {
-          matchArrIndex++
-          continue
+        if(matchArr[matchArrIndex] !== undefined) {
+          result = result.replace('()', matchArr[matchArrIndex])
         }
-        result = result.replace('()', matchArr[matchArrIndex])
         matchArrIndex++
       }
-      if(result.indexOf('_@_@_') !== -1) {
-        result = result.replace(/_@_@_/g, '()')
+      if(result.indexOf('q@-@p') !== -1) {
+        result = result.replace(/q@-@p/g, '()')
       }
       if(!cache[lang]) cache[lang] = {}
       if(!hasParentheses) {
         cache[lang][oldStr] = result
       }
       return result
-    }
-    if(str.indexOf('_@_@_') !== -1) {
-      str = str.replace(/_@_@_/g, '()')
     }
     return str
   }
