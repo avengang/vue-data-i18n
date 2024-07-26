@@ -59,15 +59,16 @@ function install(Vue, options) {
       var exp = null
       while((exp = regex.exec(str)) !== null) {
         var v = ''
-        if(_this[exp[1]] !== undefined) {
-          v += _this[exp[1]]
-        } else if(_this.g[exp[1]]) {
-          v += _this.g[exp[1]]
-        } else {
-          v = exp[1]
-        }
         if(!exp[1]) {
           v = 'q@-@p'
+        } else {
+          if(_this[exp[1]] !== undefined) {
+            v += _this[exp[1]]
+          } else if(_this.g[exp[1]]) {
+            v += _this.g[exp[1]]
+          } else {
+            v = exp[1]
+          }
         }
         matchArr.push(v)
       }
