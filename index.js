@@ -74,35 +74,45 @@ function install(Vue, options) {
     if(key.indexOf('_@_@_') !== -1) {
       key = key.replace(/_@_@_/g, '()')
     }
-    if(str.indexOf('_@_@_') !== -1) {
-      str = str.replace(/_@_@_/g, '()')
-    }
     if(i18nObj[lang][key]) {
       // var exp_p = regex_placeholder.exec(str)
       var hasPlaceholder = regex_placeholder.test(str)
       if(hasPlaceholder) {
         var dl = (config&&config.length) ? config[0] : defaultLang
         if(lang === dl) {
+          if(str.indexOf('_@_@_') !== -1) {
+            str = str.replace(/_@_@_/g, '()')
+          }
           cache[lang][oldStr] = str
           return str
         } else {
-          cache[lang][oldStr] = i18nObj[lang][str]
-          return i18nObj[lang][str]
+          cache[lang][oldStr] = i18nObj[lang][key]
+          return i18nObj[lang][key]
         }
       }
       var result = i18nObj[lang][key].replace(/\[[^\]]*\]/gm, '')
+      result = result.replace(/\(\)/g, '_@_@_')
       var matchArrIndex = 0
       const hasParentheses = result.indexOf('()') !== -1
       while(result.indexOf('()') !== -1) {
+        if(matchArr[matchArrIndex] === undefined) {
+          matchArrIndex++
+          continue
+        }
         result = result.replace('()', matchArr[matchArrIndex])
         matchArrIndex++
       }
-      
+      if(result.indexOf('_@_@_') !== -1) {
+        result = result.replace(/_@_@_/g, '()')
+      }
       if(!cache[lang]) cache[lang] = {}
       if(!hasParentheses) {
         cache[lang][oldStr] = result
       }
       return result
+    }
+    if(str.indexOf('_@_@_') !== -1) {
+      str = str.replace(/_@_@_/g, '()')
     }
     return str
   }
