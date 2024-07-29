@@ -86,7 +86,7 @@ function install(Vue, options) {
           return i18nObj[lang][key]
         }
       }
-      var result = i18nObj[lang][key].replace(/\[[^\]]*\]/gm, '')
+      var result = i18nObj[lang][key].replace(/\[[^\]]+\]/gm, '')
       var matchArrIndex = 0
       const hasParentheses = result.indexOf('()') !== -1
       while(result.indexOf('()') !== -1) {
